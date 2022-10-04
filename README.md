@@ -2,4 +2,5 @@
 
 
 Cloud formation temaplate creating 3 Ubuntu 20.04 instances. 
-Purpose is to utilize for a basic kubernetes cluster of 1 node, 2 workers. 
+
+Intended use: basic kubernetes cluster of 1 primary & 2 workers. 
