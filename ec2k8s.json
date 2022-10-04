@@ -143,19 +143,6 @@
                 ]
             }
         }
-    },
-    "Outputs": {
-        "PrimaryPublicIp": {
-            "Value": {"Fn::GetAtt": ["Primary", "PublicIp"]},
-            "Description": "Primary Public Ip Address"
-        },
-        "Worker1PublicIp": {
-            "Value": {"Fn::GetAtt": ["Worker1", "PublicIp"]},
-            "Description": "Worker1 Public Ip Address"
-        },
-        "Worker2PublicIp": {
-            "Value": {"Fn::GetAtt": ["Worker2", "PublicIp"]},
-            "Description": "Worker2 Public Ip Address"
-        }
     }
+
 }
