@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description":"Creates three EC2 Ubuntu 20.04 instances for k8s labs (1 primary, 2 worker) ",
+    "Description":"Creates three EC2 Ubuntu 20.04 instances for k8s (1 primary, 2 worker) ",
 
     "Resources": {
         "NewKeyPair": {
@@ -8,7 +8,7 @@
             "Properties": { 
                 "KeyName":"MyKeyPair",
                 "KeyType":"ed25519",
-                "Tags" : [ {"Key":"system", "Value":"lfk8s"}]
+                "Tags" : [ {"Key":"system", "Value":"k8s"}]
             } 
         }, 
         "Primary": {
@@ -30,7 +30,7 @@
                 ],
                 "Tags": [
                     {"Key": "Name", "Value": "Primary"},
-                    {"Key": "system", "Value": "lfk8s"}
+                    {"Key": "system", "Value": "k8s"}
                 ],
                 "UserData": {
                     "Fn::Base64": {
@@ -63,7 +63,7 @@
                 ],
                 "Tags": [
                     {"Key": "Name", "Value": "Worker1"},
-                    {"Key": "system", "Value": "lfk8s"}
+                    {"Key": "system", "Value": "k8s"}
                 ],
                 "UserData": {
                     "Fn::Base64": {
@@ -71,6 +71,7 @@
                             "#!/bin/bash\n",
                             "sudo hostname worker1 \n",
                             "echo worker1 > /etc/hostname\n"
+                            "sudo apt update && sudo apt upgrade -y"
                         ]]
                     }
                 }
@@ -95,7 +96,7 @@
                 ],
                 "Tags": [
                     {"Key": "Name", "Value": "Worker2"},
-                    {"Key": "system", "Value": "lfk8s"}
+                    {"Key": "system", "Value": "k8s"}
                 ],
                 "UserData": {
                     "Fn::Base64": {
@@ -103,6 +104,7 @@
                             "#!/bin/bash\n",
                             "sudo hostname worker2 \n",
                             "echo worker2 > /etc/hostname\n"
+                            "sudo apt update && sudo apt upgrade -y"
                         ]]
                     }
                 }
@@ -112,7 +114,7 @@
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription": "Allow ssh, 6443, icmp ingress, k8s service port range",
-                "Tags":[{"Key": "system", "Value": "lfk8s"}],
+                "Tags":[{"Key": "system", "Value": "k8s"}],
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
