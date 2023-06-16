@@ -1,0 +1,148 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description":"Creates three EC2 Ubuntu 20.04 instances for k8s (1 primary, 2 worker) ",
+
+    "Resources": {
+        "NewKeyPair": {
+            "Type": "AWS::EC2::KeyPair", 
+            "Properties": { 
+                "KeyName":"MyKeyPair",
+                "KeyType":"ed25519",
+                "Tags" : [ {"Key":"system", "Value":"k8s"}]
+            } 
+        }, 
+        "Primary": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName": {"Ref": "NewKeyPair"},
+                "InstanceType": "m5a.large",
+                "ImageId": "ami-0ddf424f81ddb0720",
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/sda1",
+                        "Ebs": {"VolumeSize": 20}
+                    }
+                ],
+                "Tags": [
+                    {"Key": "Name", "Value": "Primary"},
+                    {"Key": "system", "Value": "k8s"}
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": ["", [
+                            "#!/bin/bash\n",
+                            "sudo hostname primary \n",
+                            "echo primary > /etc/hostname\n",
+                            "sudo apt update && sudo apt upgrade -y"
+                        ]]
+                    }
+                }
+            }
+        },
+        "Worker1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName":  {"Ref": "NewKeyPair"},
+                "InstanceType": "m5a.large",
+                "ImageId": "ami-0ddf424f81ddb0720",
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/sda1",
+                        "Ebs": {"VolumeSize": 20}
+                    }
+                ],
+                "Tags": [
+                    {"Key": "Name", "Value": "Worker1"},
+                    {"Key": "system", "Value": "k8s"}
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": ["", [
+                            "#!/bin/bash\n",
+                            "sudo hostname worker1 \n",
+                            "echo worker1 > /etc/hostname\n"
+                            "sudo apt update && sudo apt upgrade -y"
+                        ]]
+                    }
+                }
+            }
+        },
+        "Worker2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName":  {"Ref": "NewKeyPair"},
+                "InstanceType": "m5a.large",
+                "ImageId": "ami-0ddf424f81ddb0720",
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/sda1",
+                        "Ebs": {"VolumeSize": 20}
+                    }
+                ],
+                "Tags": [
+                    {"Key": "Name", "Value": "Worker2"},
+                    {"Key": "system", "Value": "k8s"}
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": ["", [
+                            "#!/bin/bash\n",
+                            "sudo hostname worker2 \n",
+                            "echo worker2 > /etc/hostname\n"
+                            "sudo apt update && sudo apt upgrade -y"
+                        ]]
+                    }
+                }
+            }
+        },
+        "InstanceSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow ssh, 6443, icmp ingress, k8s service port range",
+                "Tags":[{"Key": "system", "Value": "k8s"}],
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                  {
+                    "IpProtocol": "tcp",
+                    "FromPort": 6443,
+                    "ToPort": 6443,
+                    "CidrIp": "0.0.0.0/0"
+                  },
+                  {
+                      "IpProtocol": "icmp",
+                      "FromPort": -1,
+                      "ToPort": -1,
+                      "CidrIp": "0.0.0.0/0"
+                  },
+                  {
+                      "IpProtocol" : "tcp", 
+                      "FromPort": 30000,
+                      "ToPort" : 32767, 
+                      "CidrIp" : "0.0.0.0/0"
+                  }
+                ]
+            }
+        }
+    }
+
+}
